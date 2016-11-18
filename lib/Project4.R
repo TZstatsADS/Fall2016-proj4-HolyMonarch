@@ -550,6 +550,7 @@ for (i in 1:100){
 }
 
 write.csv(rank,'~/Fall 2016/GR5243/Project4/results.csv',row.names = F )
+
 ########################## XGBoost #######################################
 #xgboost=xgboost(data=as.matrix(train_features),
 #                label=as.factor(train_data$cluster),
