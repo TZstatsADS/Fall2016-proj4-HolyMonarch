@@ -344,9 +344,9 @@ for ( i in 1:n.variables){
 }
 
 ############### K-means #########################################
-songs_cluster <- kmeans(train_features,20,20)
-names(train_features)
-songs_cluster
+#songs_cluster <- kmeans(train_features,20,20)
+#names(train_features)
+#songs_cluster
 
 
 
@@ -408,7 +408,7 @@ cluster_LDA=vector()
 for (i in 1:2350){
   cluster_LDA[i]=which.max(theta[i,])
 }
-######################### search for the relationship ####################
+######################### the relationship ####################
 
 theta[which(theta>0.06667)]=1
 theta[which(theta<=0.06667)]=0
@@ -463,14 +463,14 @@ for(i in 1:15){
 
 ##########################  Tree  ########################################
 #install.packages("tree")
-tree=tree(as.factor(X1)~.,data=train_data[,1:43])
-mean(predict(tree,validate_features,type="class")==theta[2001:2350,1])
+#tree=tree(as.factor(X1)~.,data=train_data[,1:43])
+#mean(predict(tree,validate_features,type="class")==theta[2001:2350,1])
 
 
 ########################## Random Forest #################################
 #install.packages("randomForest")
-rf=randomForest(as.factor(X1)~.,data=train_data[,1:43],ntree=300)
-mean(predict(rf,validate_features)==theta[2001:2350,1])
+#rf=randomForest(as.factor(X1)~.,data=train_data[,1:43],ntree=300)
+#mean(predict(rf,validate_features)==theta[2001:2350,1])
 
 ########################## Neural Network #################################
 
@@ -505,7 +505,7 @@ accuracy=function(train_features,validate_features,m=theta){
   return(acc)
 }
 
-acc1=accuracy(train_features2,validate_features2)
+#acc1=accuracy(train_features2,validate_features2)
 acc2=accuracy(train_features3,validate_features3)
 
 #phi[2,]
