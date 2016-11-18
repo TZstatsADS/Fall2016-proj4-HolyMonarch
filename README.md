@@ -56,7 +56,10 @@ eta <- 0.02
 which could give us balanced clusters(no especially large cluster). 
 
 ### Features model
+We need to find the link between lyrics and music features. To I used machine learning and deep learning algorithms to fit the model. The music features are variables and the lyrics cluster is the lable. One song can have multiple topic. I used the average probability as the Threshold. 
+That is a supervised learning problem. 
 I tried several multi-class models but their performances are really poor. 
+
 I tried several binary-class models and Neural Network has the best performance.
 So I construct Neural Network model for each of the 15 Lyrics topics. And the average validation accuracy is 62%. 
 I tuned the parameters and hyperparameters. The best parameters space are :
@@ -72,6 +75,6 @@ MaxNWt=7000
 I extracted the testset's features. And use Neural Network models to predict its topic. 
 If the song cannot be labaled as even 1 of the topic, the algorithm will just give the most generalized rank of words. 
 If the song is labled as only 1 topic, the algorithm will return the rank of words in that specific topic.
-If the song is labled for multiple topic, the algorithm will return the average rank of words in all the related topic.
+If the song is labled as multiple topic, the algorithm will return the average rank of words in all the related topic.
 
-Here I use topic's words rank directly as song's words rank to avoid overfitting. 
+Here I used topic's words rank directly as song's words rank to avoid overfitting. 
