@@ -8,6 +8,9 @@ setwd("~/Fall 2016/GR5243/Project4/Project4_data/data")
 z <- c("A","B")
 files.train <- dir(z, recursive=TRUE, full.names=TRUE)[1:2000]
 files.validate <-dir(z, recursive=TRUE, full.names=TRUE)[2001:2350]
+
+files.test <- dir('~/Fall 2016/GR5243/Project4/TestSongFile100',recursive=TRUE,full.names=TRUE)
+files.test.name <- dir('~/Fall 2016/GR5243/Project4/TestSongFile100',recursive=TRUE,full.names = FALSE)
 #source("https://bioconductor.org/biocLite.R")
 #biocLite("rhdf5")
 #devtools::install_github("cpsievert/LDAvisData")
@@ -29,6 +32,7 @@ library(mlogit)
 #install.packages("xgboost")
 library(xgboost)
 library(moments)
+library(data.table)
 
 h5ls(files.train[1])
 pitches=h5read(files.train[1],"/analysis/segments_pitches")[,1:6]
@@ -519,13 +523,14 @@ for (i in 1:15){
   cluster_info[i,]=colSums(as.matrix(lyr[theta[,i]==1,2:5001]))
 }
 colnames(cluster_info)=colnames(lyr)[2:5001]
+cluster_info[,c(2,3,6:30)]=0
 
 
 
 pred=function(train_features,test_features,m=theta){
   prediction=matrix(ncol=15,nrow=dim(test_features)[1])
   for (i in 1:15){
-    data=cbind(train_features,y=m[1:2350,i])
+    data=cbind(train_features,y=m[,i])
     nn=nnet(as.factor(y)~.,data=data,size=20,rang=0.2,decay=5e-4,maxit=300,trace=F,MaxNWt=7000)
     prediction[,i]=as.vector(as.numeric(predict(nn,test_features,type="class")))
   }
@@ -536,20 +541,22 @@ all_train_features=rbind(train_features3,validate_features3)
 prediction=pred(all_train_features,test_features)
 
 
-rank=matrix(nrow=100,ncol=100)
+rankings=matrix(nrow=100,ncol=5000)
 for (i in 1:100){
   if (sum(prediction[i,])==0){
-    rank[i,]=names(sort(colSums(cluster_info),decreasing = T)[1:100])
+    rankings[i,]=frankv(colSums(cluster_info),order=-1,ties.method = "average")
   }
   if(sum(prediction[i,])==1){
-    rank[i,]=names(sort(cluster_info[prediction[i,]==1,],decreasing = T)[1:100])
+    rankings[i,]=frankv(cluster_info[prediction[i,]==1,],order=-1,ties.method = "average")
   }
   else{
-    rank[i,]=names(sort(colSums(cluster_info[prediction[i,]==1,]),decreasing = T)[1:100])
+    rankings[i,]=frankv(colSums(cluster_info[prediction[i,]==1,]),order=-1,ties.method="average")
   }
 }
-
-write.csv(rank,'~/Fall 2016/GR5243/Project4/results.csv',row.names = F )
+colnames(rankings)=colnames(cluster_info)
+rownames(rankings)=files.test.name
+rankings[,c(2,3,6:30)]=4987
+write.csv(rankings,'~/Fall 2016/GR5243/Project4/results.csv',row.names = T,col.names = T )
 
 ########################## XGBoost #######################################
 #xgboost=xgboost(data=as.matrix(train_features),
